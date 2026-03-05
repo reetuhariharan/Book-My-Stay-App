@@ -1,0 +1,2 @@
+public class BookApp {
+}
