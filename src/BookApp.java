@@ -12,16 +12,12 @@ class BookingRequest {
 
 public class BookApp {
 
-    // Queue for FIFO booking processing
     private Queue<BookingRequest> bookingQueue = new LinkedList<>();
 
-    // Set to ensure unique room IDs
     private Set<String> allocatedRooms = new HashSet<>();
 
-    // Map room type -> allocated room IDs
     private Map<String, Set<String>> roomTypeMap = new HashMap<>();
 
-    // Track room numbers per type
     private Map<String, Integer> roomCounter = new HashMap<>();
 
     public void addBooking(String guest, String roomType) {
