@@ -1,53 +1,48 @@
 import java.util.*;
 
-class Reservation {
-    String guestName;
-    String roomType;
+class BookingManager {
+    private Map<String, Integer> inventory = new HashMap<>();
+    private Map<String, String> reservations = new HashMap<>();
+    private Stack<String> rollbackStack = new Stack<>();
 
-    Reservation(String guestName, String roomType) {
-        this.guestName = guestName;
-        this.roomType = roomType;
-    }
-}
-
-class BookingHistory {
-
-    private List<Reservation> reservations = new ArrayList<>();
-
-    public void addReservation(Reservation reservation) {
-        reservations.add(reservation);
+    public BookingManager() {
+        inventory.put("Single", 5);
+        inventory.put("Double", 3);
+        inventory.put("Suite", 2);
+        reservations.put("Single-1", "Abhisheak");
     }
 
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-}
-
-class BookingReportService {
-
-    public void generateReport(List<Reservation> reservations) {
-
-        System.out.println("Booking History and Reporting\n");
-        System.out.println("Booking History Report");
-
-        for (Reservation r : reservations) {
-            System.out.println("Guest: " + r.guestName + ", Room Type: " + r.roomType);
+    public void cancelBooking(String reservationId) {
+        if (!reservations.containsKey(reservationId)) {
+            System.out.println("Cancellation failed. Reservation not found.");
+            return;
         }
+
+        String roomType = reservationId.split("-")[0];
+
+        reservations.remove(reservationId);
+        rollbackStack.push(reservationId);
+
+        inventory.put(roomType, inventory.get(roomType) + 1);
+
+        System.out.println("Booking cancelled successfully. Inventory restored for room type: " + roomType);
+        System.out.println();
+        System.out.println("Rollback History (Most Recent First):");
+
+        while (!rollbackStack.isEmpty()) {
+            System.out.println("Released Reservation ID: " + rollbackStack.pop());
+        }
+
+        System.out.println();
+        System.out.println("Updated " + roomType + " Room Availability: " + inventory.get(roomType));
     }
 }
 
 public class BookApp {
-
     public static void main(String[] args) {
+        BookingManager manager = new BookingManager();
 
-        BookingHistory history = new BookingHistory();
-
-        history.addReservation(new Reservation("Abhi", "Single"));
-        history.addReservation(new Reservation("Subha", "Double"));
-        history.addReservation(new Reservation("Vanmathi", "Suite"));
-
-        // Generate report
-        BookingReportService reportService = new BookingReportService();
-        reportService.generateReport(history.getReservations());
+        System.out.println("Booking Cancellation");
+        manager.cancelBooking("Single-1");
     }
 }
