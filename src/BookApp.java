@@ -1,6 +1,5 @@
 import java.util.*;
 
-// Represents an add-on service
 class AddOnService {
     String serviceName;
     double cost;
@@ -15,20 +14,16 @@ class AddOnService {
     }
 }
 
-// Manages add-on services for reservations
 class AddOnServiceManager {
 
-    // Map: Reservation ID -> List of services
     private Map<String, List<AddOnService>> reservationServices = new HashMap<>();
 
-    // Add service to a reservation
     public void addService(String reservationId, AddOnService service) {
         reservationServices
                 .computeIfAbsent(reservationId, k -> new ArrayList<>())
                 .add(service);
     }
 
-    // Calculate total cost of services for a reservation
     public double calculateTotalCost(String reservationId) {
 
         double total = 0;
@@ -53,7 +48,6 @@ public class BookApp {
 
         String reservationId = "Single-1";
 
-        // Guest selects services
         manager.addService(reservationId, new AddOnService("Breakfast", 500));
         manager.addService(reservationId, new AddOnService("Airport Pickup", 1000));
 
