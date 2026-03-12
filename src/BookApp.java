@@ -1,44 +1,47 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
-class Reservation {
-    String guestName;
-    String roomType;
-    int nights;
+// Represents an add-on service
+class AddOnService {
+    String serviceName;
+    double cost;
 
-    Reservation(String guestName, String roomType, int nights) {
-        this.guestName = guestName;
-        this.roomType = roomType;
-        this.nights = nights;
+    AddOnService(String serviceName, double cost) {
+        this.serviceName = serviceName;
+        this.cost = cost;
     }
 
-    void displayRequest() {
-        System.out.println("Guest: " + guestName + ", Room Type: " + roomType + ", Nights: " + nights);
+    public double getCost() {
+        return cost;
     }
 }
 
-class BookingRequestQueue {
-    private Queue<Reservation> requestQueue;
+// Manages add-on services for reservations
+class AddOnServiceManager {
 
-    BookingRequestQueue() {
-        requestQueue = new LinkedList<>();
+    // Map: Reservation ID -> List of services
+    private Map<String, List<AddOnService>> reservationServices = new HashMap<>();
+
+    // Add service to a reservation
+    public void addService(String reservationId, AddOnService service) {
+        reservationServices
+                .computeIfAbsent(reservationId, k -> new ArrayList<>())
+                .add(service);
     }
 
-    void addRequest(Reservation reservation) {
-        requestQueue.offer(reservation);
-        System.out.println("Booking request added for guest: " + reservation.guestName);
-    }
+    // Calculate total cost of services for a reservation
+    public double calculateTotalCost(String reservationId) {
 
-    void displayAllRequests() {
-        System.out.println("\nCurrent Booking Requests in Queue:");
-        for (Reservation r : requestQueue) {
-            r.displayRequest();
+        double total = 0;
+
+        List<AddOnService> services = reservationServices.get(reservationId);
+
+        if (services != null) {
+            for (AddOnService s : services) {
+                total += s.getCost();
+            }
         }
-        System.out.println();
-    }
 
-    boolean isEmpty() {
-        return requestQueue.isEmpty();
+        return total;
     }
 }
 
@@ -46,17 +49,18 @@ public class BookApp {
 
     public static void main(String[] args) {
 
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        AddOnServiceManager manager = new AddOnServiceManager();
 
-        Reservation r1 = new Reservation("Alice", "Single Room", 2);
-        Reservation r2 = new Reservation("Bob", "Double Room", 3);
-        Reservation r3 = new Reservation("Charlie", "Suite Room", 1);
+        String reservationId = "Single-1";
 
-        bookingQueue.addRequest(r1);
-        bookingQueue.addRequest(r2);
-        bookingQueue.addRequest(r3);
+        // Guest selects services
+        manager.addService(reservationId, new AddOnService("Breakfast", 500));
+        manager.addService(reservationId, new AddOnService("Airport Pickup", 1000));
 
-        bookingQueue.displayAllRequests();
+        double totalCost = manager.calculateTotalCost(reservationId);
 
+        System.out.println("Add-On Service Selection");
+        System.out.println("Reservation ID: " + reservationId);
+        System.out.println("Total Add-On Cost: " + totalCost);
     }
 }
